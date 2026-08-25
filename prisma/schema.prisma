@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Question {
+  id      Int      @id @default(autoincrement())
+  title   String
+  score   Int      @default(0)
+  upvotes Upvote[]
+}
+
+model Upvote {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
+
+  // one upvote per user per question -> a duplicate insert throws P2002
+  @@unique([userId, questionId])
+}
